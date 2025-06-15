@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"log"
@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/umdalecs/weather-api/config"
 )
 
 type clientData struct {
@@ -16,24 +18,24 @@ type clientData struct {
 var (
 	clients = make(map[string]*clientData)
 	mu      sync.Mutex
-	limit   = Envs.RequestLimit
+	limit   = config.Envs.RequestLimit
 	window  = 1 * time.Minute
 )
 
-type Middleware func(http.Handler) http.HandlerFunc
+type Middleware func(http.Handler) http.Handler
 
 func MiddlewareChain(middlewares ...Middleware) Middleware {
-	return func(next http.Handler) http.HandlerFunc {
+	return func(next http.Handler) http.Handler {
 		for i := len(middlewares) - 1; i >= 0; i-- {
 			next = middlewares[i](next)
 		}
 
-		return next.ServeHTTP
+		return next
 	}
 }
 
-func RateLimiter(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RateLimiter(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 
 		mu.Lock()
@@ -52,12 +54,12 @@ func RateLimiter(next http.Handler) http.HandlerFunc {
 		mu.Unlock()
 
 		next.ServeHTTP(w, r)
-	}
+	})
 }
 
-func RequestLogger(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RequestLogger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("method: %s, path: %s", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
-	}
+	})
 }

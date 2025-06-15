@@ -1,10 +1,12 @@
-package main
+package api
 
 import (
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/umdalecs/weather-api/config"
 )
 
 func RetrieveData(location string) (string, error) {
@@ -17,7 +19,7 @@ func RetrieveData(location string) (string, error) {
 
 	q := u.Query()
 	q.Set("unitGroup", "metric")
-	q.Set("key", Envs.ApiKey)
+	q.Set("key", config.Envs.ApiKey)
 	q.Set("contentType", "json")
 	u.RawQuery = q.Encode()
 
