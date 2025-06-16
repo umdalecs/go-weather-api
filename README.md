@@ -1,6 +1,6 @@
-# Weather API Go net/http
+# Go net/http Weather API wrapper service
 
-This is my golang solution to https://roadmap.sh/projects/weather-api-wrapper-service, i tried to minimize dependencies using only the `net/http` standard library for both server and client code, i only use the redis package and godotenv to load .env files.
+This is my golang solution to https://roadmap.sh/projects/weather-api-wrapper-service, i tried to minimize dependencies using only the `net/http` standard library for both server and client code.
 
 ## Features
 
@@ -35,7 +35,7 @@ cp .env.example .env
 ### 4. Build and run the application
 
 ```bash
-go build -o out/
+go build -o out/weather-api ./cmd
 ./out/weather-api
 ```
 
