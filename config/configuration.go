@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -11,11 +10,12 @@ import (
 var Envs = initConfig()
 
 type Config struct {
-	RedisAddr    string
-	RedisPassw   string
-	RedisDB      int
-	ServerPort   string
-	ApiKey       string
+	RedisAddr  string
+	RedisPassw string
+	RedisDB    int
+
+	ApiKey string
+
 	RequestLimit int
 }
 
@@ -23,12 +23,13 @@ func initConfig() *Config {
 	godotenv.Load()
 
 	return &Config{
-		RedisAddr:    LoadEnv("REDIS_ADDR", "localhost:6379"),
-		RedisPassw:   LoadEnv("REDIS_PASSWORD", "redis"),
-		RedisDB:      LoadIntEnv("REDIS_DB", "0"),
-		ServerPort:   fmt.Sprintf(":%s", LoadEnv("SERVER_PORT", "8080")),
-		ApiKey:       LoadEnv("WEATHER_VISUALCROSSING_APIKEY", ""),
+		RedisAddr:  LoadEnv("REDIS_ADDR", "localhost:6379"),
+		RedisPassw: LoadEnv("REDIS_PASSWORD", "redis"),
+		RedisDB:    LoadIntEnv("REDIS_DB", "0"),
+
 		RequestLimit: LoadIntEnv("REQUEST_LIMIT", "10"),
+
+		ApiKey: LoadEnv("WEATHER_VISUALCROSSING_APIKEY", ""),
 	}
 }
 
