@@ -1,18 +1,17 @@
-package db
+package main
 
 import (
 	"context"
 	"log"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/umdalecs/weather-api/config"
 )
 
 func InitRedisDb() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     config.Envs.RedisAddr,
-		Password: config.Envs.RedisPassw,
-		DB:       config.Envs.RedisDB,
+		Addr:     Envs.RedisAddr,
+		Password: Envs.RedisPassw,
+		DB:       Envs.RedisDB,
 	})
 
 	if err := testConnection(rdb); err != nil {

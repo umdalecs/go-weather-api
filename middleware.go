@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"log"
@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/umdalecs/weather-api/config"
 )
 
 type clientData struct {
@@ -18,7 +16,7 @@ type clientData struct {
 var (
 	clients = make(map[string]*clientData)
 	mu      sync.Mutex
-	limit   = config.Envs.RequestLimit
+	limit   = Envs.RequestLimit
 	window  = 1 * time.Minute
 )
 
