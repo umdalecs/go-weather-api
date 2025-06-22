@@ -1,6 +1,6 @@
-# Go net/http Weather API wrapper service
+# Golang Weather API wrapper service
 
-This is my golang solution to https://roadmap.sh/projects/weather-api-wrapper-service, i tried to minimize dependencies using only the `net/http` standard library for both server and client code.
+This is my golang solution to https://roadmap.sh/projects/weather-api-wrapper-service.
 
 ## Features
 
@@ -41,4 +41,6 @@ go build -o out/weather-api ./cmd
 
 ## Usage
 
-I put the `requests.http` file with an example fetching the London weather data but you're free to use any other tool out there 
+```bash
+curl http://localhost:8080/London
+```

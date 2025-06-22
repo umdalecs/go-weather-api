@@ -14,7 +14,7 @@ func RetrieveData(location string) (string, error) {
 
 	u, err := url.Parse(baseUrl)
 	if err != nil {
-		return "", fmt.Errorf("Error parsing url")
+		return "", fmt.Errorf("error parsing url")
 	}
 
 	q := u.Query()
@@ -25,14 +25,14 @@ func RetrieveData(location string) (string, error) {
 
 	resp, err := http.Get(u.String())
 	if err != nil {
-		return "", fmt.Errorf("Error retrieving data from external api")
+		return "", fmt.Errorf("error retrieving data from external api")
 	}
 
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("Error reading the external api response body")
+		return "", fmt.Errorf("error reading the external api response body")
 	}
 
 	return string(bodyBytes), nil
