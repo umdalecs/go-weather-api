@@ -39,7 +39,7 @@ func (s *ApiServer) Run() error {
 
 	e.Use(middleware)
 
-	e.GET("/:location", func(c *gin.Context) {
+	e.GET("/api/v1/:location", func(c *gin.Context) {
 		location := c.Param("location")
 
 		val, err := s.rdb.Get(ctx, location).Result()

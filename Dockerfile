@@ -20,6 +20,7 @@ WORKDIR /root/
 
 COPY --from=builder /src .
 
+ENV GIN_MODE=release
 ENV REDIS_PASSWORD=
 ENV REDIS_ADDR=
 ENV REDIS_DB=

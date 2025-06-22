@@ -42,5 +42,5 @@ go build -o out/ .
 ## Usage
 
 ```bash
-curl http://localhost:8080/London
+curl http://localhost:8080/api/v1/London
 ```
