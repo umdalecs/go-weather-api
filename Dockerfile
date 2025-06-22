@@ -12,7 +12,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o weather-api ./cmd
+RUN go build -o weather-api .
 
 FROM alpine:latest
 
