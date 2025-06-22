@@ -10,7 +10,7 @@ import (
 func InitRedisDb() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     Envs.RedisAddr,
-		Password: Envs.RedisPassw,
+		Password: Envs.RedisPass,
 		DB:       Envs.RedisDB,
 	})
 

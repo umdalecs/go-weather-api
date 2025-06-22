@@ -11,9 +11,9 @@ import (
 var Envs = initConfig()
 
 type Config struct {
-	RedisAddr  string
-	RedisPassw string
-	RedisDB    int
+	RedisAddr string
+	RedisPass string
+	RedisDB   int
 
 	ApiKey string
 
@@ -24,9 +24,9 @@ func initConfig() *Config {
 	godotenv.Load()
 
 	return &Config{
-		RedisAddr:  LoadEnv("REDIS_ADDR"),
-		RedisPassw: LoadEnv("REDIS_PASSWORD"),
-		RedisDB:    LoadIntEnv("REDIS_DB"),
+		RedisAddr: LoadEnv("REDIS_ADDR"),
+		RedisPass: LoadEnv("REDIS_PASSWORD"),
+		RedisDB:   LoadIntEnv("REDIS_DB"),
 
 		RequestLimit: LoadIntEnv("REQUEST_LIMIT"),
 

@@ -2,22 +2,27 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/ulule/limiter/v3"
+	ginlimiter "github.com/ulule/limiter/v3/drivers/middleware/gin"
+	memory "github.com/ulule/limiter/v3/drivers/store/memory"
+
+	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )
 
 type ApiServer struct {
-	Addr string
-	Rdb  *redis.Client
+	addr string
+	rdb  *redis.Client
 }
 
 func NewApiServer(addr string, rdb *redis.Client) *ApiServer {
 	return &ApiServer{
-		Addr: addr,
-		Rdb:  rdb,
+		addr: addr,
+		rdb:  rdb,
 	}
 }
 
@@ -26,45 +31,36 @@ var (
 )
 
 func (s *ApiServer) Run() error {
-	r := http.NewServeMux()
+	e := gin.Default()
 
-	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		WriteJson(w, http.StatusNotFound, map[string]any{"error": "Not found"})
-	})
+	rate, _ := limiter.NewRateFromFormatted(fmt.Sprintf("%d-M", Envs.RequestLimit))
+	store := memory.NewStore()
+	middleware := ginlimiter.NewMiddleware(limiter.New(store, rate))
 
-	r.HandleFunc("GET /{location}", func(w http.ResponseWriter, r *http.Request) {
-		location := r.PathValue("location")
+	e.Use(middleware)
 
-		val, err := s.Rdb.Get(ctx, location).Result()
+	e.GET("/:location", func(c *gin.Context) {
+		location := c.Param("location")
+
+		val, err := s.rdb.Get(ctx, location).Result()
 		if err != nil {
 			val, err = RetrieveData(location)
 			if err != nil {
-				WriteJson(w, http.StatusInternalServerError, map[string]any{"error": "Error retrieving data"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error retrieving data"})
 				return
 			}
 
-			_, err = s.Rdb.Set(ctx, location, val, 12*time.Hour).Result()
+			_, err = s.rdb.Set(ctx, location, val, 12*time.Hour).Result()
 			if err != nil {
-				WriteJson(w, http.StatusInternalServerError, map[string]any{"error": "Error storing data"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error storing data"})
 				return
 			}
 		}
 
-		WriteStringJson(w, http.StatusOK, val)
-
+		c.Header("Content-Type", "application/json")
+		c.Status(200)
+		c.Writer.Write([]byte(val))
 	})
 
-	middlewareChain := MiddlewareChain(
-		RequestLogger,
-		RateLimiter,
-	)
-
-	httpServer := &http.Server{
-		Addr:    s.Addr,
-		Handler: middlewareChain(r),
-	}
-
-	log.Printf("Server running in port %s", s.Addr)
-
-	return httpServer.ListenAndServe()
+	return e.Run(":8080")
 }
