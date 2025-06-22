@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
 
@@ -23,25 +24,30 @@ func initConfig() *Config {
 	godotenv.Load()
 
 	return &Config{
-		RedisAddr:  LoadEnv("REDIS_ADDR", "localhost:6379"),
-		RedisPassw: LoadEnv("REDIS_PASSWORD", "redis"),
-		RedisDB:    LoadIntEnv("REDIS_DB", "0"),
+		RedisAddr:  LoadEnv("REDIS_ADDR"),
+		RedisPassw: LoadEnv("REDIS_PASSWORD"),
+		RedisDB:    LoadIntEnv("REDIS_DB"),
 
-		RequestLimit: LoadIntEnv("REQUEST_LIMIT", "10"),
+		RequestLimit: LoadIntEnv("REQUEST_LIMIT"),
 
-		ApiKey: LoadEnv("WEATHER_VISUALCROSSING_APIKEY", ""),
+		ApiKey: LoadEnv("WEATHER_VISUALCROSSING_APIKEY"),
 	}
 }
 
-func LoadEnv(name, fallback string) string {
-	if value, ok := os.LookupEnv(name); ok {
-		return value
+func LoadEnv(name string) string {
+	value, ok := os.LookupEnv(name)
+	if !ok {
+		log.Fatalf("missing %s", name)
 	}
 
-	return fallback
+	return value
 }
 
-func LoadIntEnv(name, fallback string) int {
-	value, _ := strconv.Atoi(LoadEnv(name, fallback))
+func LoadIntEnv(name string) int {
+	value, err := strconv.Atoi(LoadEnv(name))
+	if err != nil {
+		log.Fatalf("%s must be an integer", name)
+	}
+
 	return value
 }
